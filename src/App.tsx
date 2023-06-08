@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import './App.css'
 import axios from "axios";
 
-export type GetTodolistsResponse = {
+export type GetTodolistsResponseType = {
     pagesCount: number
     page: number
     pageSize: number
@@ -34,7 +34,8 @@ export type PhotoSizeViewModel = {
 function App() {
     // 1. todolists = []
     // 6. todolists = [{},{},{},{},{}] todolists from step 5
-    const [todolists, setTodolists] = useState<TodolistViewModel[]>([])
+    /*const [todolists, setTodolists] = useState<TodolistViewModel[]>([])*/
+    const [todolists, setTodolists] = useState<GetTodolistsResponseType | null>(null)
 
     /*{id: 1, title: 'css'},
     {id: 2, title: 'js'},
@@ -46,10 +47,10 @@ function App() {
     useEffect(() => {
         // 4. run effect
         console.log('useEffect')
-        axios.get<GetTodolistsResponse>('https://todolists.samuraijs.com/api/1.0/todolists').then(response => {
+        axios.get<GetTodolistsResponseType>('https://todolists.samuraijs.com/api/1.0/todolists').then(response => {
             // 5. set data to state
-            console.log(response.data)
-            setTodolists(response.data.items)
+            // console.log(response.data)
+            setTodolists(response.data)
         })
     }, [])
 
@@ -59,16 +60,18 @@ function App() {
     return (
         <div>
             <ul>
-                {todolists.map((t) => {
-                    const imageUrl = t.images.main.length > 1 ? t.images.main[1].url : 'https://placehold.co/48'
+                {todolists === null
+                    ? 'loading'
+                    : todolists.items.map(todolist => {
+                    const imageUrl = todolist.images.main.length > 1 ? todolist.images.main[1].url : 'https://placehold.co/48'
                     return (
-                        <li key={t.id.toString()}>
+                        <li key={todolist.id.toString()}>
                             <img src={imageUrl} alt="image"/>
                             <h3>
-                                {t.isImportant ? '🔥' : ''}
-                                {t.title}
+                                {todolist.isImportant ? '🔥' : ''}
+                                {todolist.title}
                             </h3>
-                            <div>{t.description}</div>
+                            <div>{todolist.description}</div>
                         </li>
                     )
                 })}
