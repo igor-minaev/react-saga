@@ -1,13 +1,40 @@
 import {useEffect, useState} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import axios from "axios";
 
+export type GetTodolistsResponse = {
+    pagesCount: number
+    page: number
+    pageSize: number
+    totalCount: number
+    items: TodolistViewModel[]
+}
+
+export type TodolistViewModel = {
+    isImportant: boolean
+    id: string
+    title: string
+    description: string
+    addedDate: string
+    order: number
+    images: TodolistImagesViewModel
+}
+
+export type TodolistImagesViewModel = {
+    main: PhotoSizeViewModel[]
+}
+
+export type PhotoSizeViewModel = {
+    url: string
+    width: number
+    height: number
+    fileSize: number
+}
+
 function App() {
-    // 1. tags = []
-    // 6. tags = [{},{},{},{},{}] tags from step 5
-    const [tags, setTags] = useState<any[]>([])
+    // 1. todolists = []
+    // 6. todolists = [{},{},{},{},{}] todolists from step 5
+    const [todolists, setTodolists] = useState<TodolistViewModel[]>([])
 
     /*{id: 1, title: 'css'},
     {id: 2, title: 'js'},
@@ -19,20 +46,20 @@ function App() {
     useEffect(() => {
         // 4. run effect
         console.log('useEffect')
-        axios.get('https://todolists.samuraijs.com/api/1.0/todolists').then(response => {
+        axios.get<GetTodolistsResponse>('https://todolists.samuraijs.com/api/1.0/todolists').then(response => {
             // 5. set data to state
             console.log(response.data)
-            setTags(response.data.items)
+            setTodolists(response.data.items)
         })
     }, [])
 
     // 3. empty rendering
-    // 7. tags rendering
+    // 7. todolists rendering
     console.log('rendering')
     return (
         <div>
             <ul>
-                {tags.map((t: any) => {
+                {todolists.map((t) => {
                     const imageUrl = t.images.main.length > 1 ? t.images.main[1].url : 'https://placehold.co/48'
                     return (
                         <li key={t.id.toString()}>
